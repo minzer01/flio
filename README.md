@@ -7,7 +7,7 @@
 - Java 21, Spring Boot
 - Spring Data JPA, MySQL
 - Spring Security, JWT
-- Thymeleaf, JavaScript (화면)
+- HTML, CSS, JavaScript (fetch로 REST API 호출)
 - p6spy (쿼리 로그 확인)
 
 ## 주요 기능
