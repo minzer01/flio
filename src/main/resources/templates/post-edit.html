@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Post - Flio</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script defer src="/js/post-edit.js"></script>
+</head>
+<body class="page">
+
+<header class="top-nav">
+    <div class="top-nav__left">
+        <button class="back-btn" onclick="window.location.href='/posts/${currentPostId}/edit'">← Back</button>
+    </div>
+
+    <div class="top-nav__right">
+        <button class="profile-btn">HI</button>
+        <button class="logout-btn">Logout</button>
+    </div>
+</header>
+
+<main class="container">
+    <section class="page-section">
+        <div class="form-card">
+            <div class="form-card__header">
+                <h1 class="form-card__title">Create New Post</h1>
+            </div>
+
+            <form id="postForm" class="form">
+                <!-- 제목 -->
+                <div class="form-row">
+                    <label for="title" class="form-label">제목 <span class="required">*</span></label>
+                    <input id="title" name="title" class="input" placeholder="제목을 입력하세요." required>
+                </div>
+
+                <!-- 여행지 / 국가 -->
+                <div class="form-row">
+                    <label for="country" class="form-label">여행지 / 국가</label>
+                    <input id="country" name="country" class="input" placeholder="미국, 캐나다, 일본, 중국,...">
+                </div>
+
+                <!-- Mood 단일 선택 -->
+                <div class="form-row">
+                    <label class="form-label">분위기</label>
+                    <div class="choice-group" id="moodGroup">
+                        <button type="button" class="choice-chip choice-chip--active" data-value="QUIET">한적함</button>
+                        <button type="button" class="choice-chip" data-value="BUZZY">시끌벅적</button>
+                        <button type="button" class="choice-chip" data-value="LOCAL">현지느낌</button>
+                        <button type="button" class="choice-chip" data-value="TOURISTY">관광객많음</button>
+                    </div>
+                </div>
+
+                <!-- Theme 다중 선택 -->
+                <div class="form-row">
+                    <label class="form-label">Themes (select one or more)</label>
+                    <div class="choice-group" id="themeGroup">
+                        <button type="button" class="choice-chip" data-value="FOOD">음식</button>
+                        <button type="button" class="choice-chip" data-value="ACCOMMODATION">숙박</button>
+                        <button type="button" class="choice-chip" data-value="TRANSPORT">대중교통</button>
+                        <button type="button" class="choice-chip" data-value="PHOTO">사진스팟</button>
+                        <button type="button" class="choice-chip" data-value="ACTIVITY">액티비티</button>
+                    </div>
+                </div>
+
+                <!-- 이미지 URL (지금은 1개만) -->
+                <div class="form-row">
+                    <label for="imageUrl" class="form-label">Image URL</label>
+                    <input id="imageUrl" name="imageUrl" class="input" placeholder="Paste image URL">
+                    <p class="form-helper">Image Url을 첨부하세요.</p>
+                </div>
+
+                <!-- 익명 여부 -->
+                <div class="form-row">
+                    <label class="form-label">익명</label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="isAnonymous">
+                        <span>익명으로 글쓰기</span>
+                    </label>
+                </div>
+
+                <!-- 내용 -->
+                <div class="form-row">
+                    <label for="content" class="form-label">내용 <span class="required">*</span></label>
+                    <textarea id="content" name="content" class="textarea" required
+                              placeholder="내용을 입력하세요."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn--secondary" onclick="history.back()">Cancel</button>
+                    <button type="button" class="btn btn--primary" onclick="handleEditPost()">Save Changes</button>
+                </div>
+
+            </form>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

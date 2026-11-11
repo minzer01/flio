@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flio - Posts</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script defer src="/js/timeAgo.js"></script>
+    <script defer src="/js/posts.js"></script>
+    <script defer src="/js/header-actions.js"></script>
+
+</head>
+<body class="page">
+
+<header class="top-nav">
+    <div class="top-nav__left">
+        <a href="/posts" class="logo">
+            <img src="/img/logo.png" alt="logo" class="logo-img">
+            <div class="logo-text">
+                <span>Flio</span>
+                <small>Share Your Journey</small>
+            </div>
+        </a>
+    </div>
+
+    <div class="top-nav__center">
+        <input
+                type="text"
+                class="search-input"
+                placeholder="Search posts..."
+        />
+    </div>
+
+    <div class="top-nav__right">
+
+        <a href="/posts/new" class="btn-primary">+ New Post</a>
+
+        <!-- ⭐ 기존의 HI 버튼 대신 이거로 바꾸기 ⭐ -->
+        <button class="profile-menu-btn" id="profileMenuButton" type="button">HI</button>
+
+        <!-- ⭐ 드롭다운 메뉴 구조 추가 ⭐ -->
+        <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu__item" data-action="edit">회원정보수정</div>
+            <div class="profile-menu__item" data-action="password">비밀번호수정</div>
+            <div class="profile-menu__item profile-menu__item--danger" data-action="logout">로그아웃</div>
+        </div>
+    </div>
+</header>
+
+<script defer src="/js/header-menu.js"></script>
+
+
+<!-- 본문 -->
+<main class="container">
+    <section class="page-section">
+        <div class="posts-header-text">
+            <strong>Travel Stories</strong>
+            <span>Discover experiences from travelers around the world</span>
+        </div>
+
+        <!-- JS에서 목록 렌더링 하는 영역 -->
+        <div class="posts-list"></div>
+    </section>
+</main>
+
+</body>
+</html>

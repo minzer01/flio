@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flio - Sign Up</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="page auth-page">
+
+<main class="auth-container">
+    <section class="auth-card">
+        <div class="auth-logo-wrapper">
+            <img src="/img/logo.png" alt="Flio logo" class="auth-logo">
+        </div>
+
+        <h1 class="auth-title">Join Flio</h1>
+        <p class="auth-subtitle">Create your account</p>
+
+        <!-- 회원가입 폼 -->
+        <form id="signupForm" class="auth-form">
+            <label class="auth-label">
+                Name
+                <input id="signupNickname" type="text" class="auth-input" placeholder="Enter your name" required>
+            </label>
+
+            <label class="auth-label">
+                Email
+                <input id="signupEmail" type="email" class="auth-input" placeholder="Enter your email" required>
+            </label>
+
+            <label class="auth-label">
+                Password
+                <input id="signupPassword" type="password" class="auth-input" placeholder="Enter your password" required>
+            </label>
+
+            <label class="auth-label">
+                Confirm Password
+                <input type="password" class="auth-input" placeholder="Confirm your password" required>
+            </label>
+
+            <button type="submit" class="btn-primary auth-submit-btn">
+                Sign Up
+            </button>
+        </form>
+
+        <p class="auth-footer-text">
+            Already have an account?
+            <a href="/login" id="loginLink">Login</a>
+        </p>
+    </section>
+</main>
+
+<!-- 예전의 "그냥 화면 이동" 스크립트는 삭제하고, JS 파일만 로드 -->
+<script src="/js/signup.js"></script>
+
+</body>
+</html>

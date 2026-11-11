@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Post - Flio</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script defer src="/js/post-new.js"></script>
+</head>
+<body class="page">
+
+<header class="top-nav">
+    <div class="top-nav__left">
+        <button class="back-btn" onclick="window.location.href='/posts'">← Back</button>
+    </div>
+
+    <div class="top-nav__right">
+        <button class="profile-btn">HI</button>
+        <button class="logout-btn">Logout</button>
+    </div>
+</header>
+
+<main class="container">
+    <section class="page-section">
+        <div class="form-card">
+            <div class="form-card__header">
+                <h1 class="form-card__title">Create New Post</h1>
+            </div>
+
+            <form id="postForm" class="form">
+                <!-- 제목 -->
+                <div class="form-row">
+                    <label for="title" class="form-label">Title <span class="required">*</span></label>
+                    <input id="title" name="title" class="input" placeholder="Enter post title" required>
+                </div>
+
+                <!-- 여행지 / 국가 -->
+                <div class="form-row">
+                    <label for="country" class="form-label">Destination / Country</label>
+                    <input id="country" name="country" class="input" placeholder="e.g. Greece, Japan, Spain">
+                </div>
+
+                <!-- Mood 단일 선택 -->
+                <div class="form-row">
+                    <label class="form-label">Mood</label>
+                    <div class="choice-group" id="moodGroup">
+                        <button type="button" class="choice-chip choice-chip--active" data-value="QUIET">QUIET</button>
+                        <button type="button" class="choice-chip" data-value="BUZZY">BUZZY</button>
+                        <button type="button" class="choice-chip" data-value="LOCAL">LOCAL</button>
+                        <button type="button" class="choice-chip" data-value="TOURISTY">TOURISTY</button>
+                    </div>
+                </div>
+
+                <!-- Theme 다중 선택 -->
+                <div class="form-row">
+                    <label class="form-label">Themes (select one or more)</label>
+                    <div class="choice-group" id="themeGroup">
+                        <button type="button" class="choice-chip" data-value="FOOD">FOOD</button>
+                        <button type="button" class="choice-chip" data-value="ACCOMMODATION">ACCOMMODATION</button>
+                        <button type="button" class="choice-chip" data-value="TRANSPORT">TRANSPORT</button>
+                        <button type="button" class="choice-chip" data-value="PHOTO">PHOTO</button>
+                        <button type="button" class="choice-chip" data-value="ACTIVITY">ACTIVITY</button>
+                    </div>
+                </div>
+
+                <!-- 이미지 URL (지금은 1개만) -->
+                <div class="form-row">
+                    <label for="imageUrl" class="form-label">Image URL</label>
+                    <input id="imageUrl" name="imageUrl" class="input" placeholder="Paste image URL">
+                    <p class="form-helper">이미지 URL을 입력하세요.</p>
+                </div>
+
+                <!-- 익명 여부 -->
+                <div class="form-row">
+                    <label class="form-label">Anonymous</label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="isAnonymous">
+                        <span>Post as anonymous</span>
+                    </label>
+                </div>
+
+                <!-- 내용 -->
+                <div class="form-row">
+                    <label for="content" class="form-label">Content <span class="required">*</span></label>
+                    <textarea id="content" name="content" class="textarea" required
+                              placeholder="Share your travel story..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button"
+                            class="btn btn--secondary"
+                            onclick="history.back()">
+                        Cancel
+                    </button>
+
+                    <button type="button"
+                            class="btn btn--primary"
+                            onclick="handleCreatePost()">
+                        Create Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

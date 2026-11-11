@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flio - Post Detail</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <script defer src="/js/timeAgo.js"></script>
+    <script defer src="/js/post-detail.js"></script>
+    <script defer src="/js/header-actions.js"></script>
+
+</head>
+
+<body>
+
+<header class="top-nav">
+    <div class="top-nav__left">
+        <button class="back-btn" onclick="window.location.href='/posts'">← Back</button>
+    </div>
+
+    <div class="top-nav__center">
+        <span class="top-nav__page-title">Post Detail</span>
+    </div>
+
+    <div class="top-nav__right">
+
+        <a href="/posts/new" class="btn-primary">+ New Post</a>
+
+        <!-- ⭐ 프로필 메뉴 버튼 -->
+        <button class="profile-menu-btn" id="profileMenuButton" type="button">HI</button>
+
+        <!-- ⭐ 드롭다운 메뉴 -->
+        <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu__item" data-action="edit">회원정보수정</div>
+            <div class="profile-menu__item" data-action="password">비밀번호수정</div>
+            <div class="profile-menu__item profile-menu__item--danger" data-action="logout">로그아웃</div>
+        </div>
+    </div>
+</header>
+
+<script defer src="/js/header-menu.js"></script>
+
+
+<main class="container">
+    <div class="post-detail-wrapper">
+        <!-- 🔹 게시글 상세 (JS에서 채움) -->
+        <div id="post-detail-container">
+            <!-- JS에서 게시글 내용을 렌더링 -->
+        </div>
+
+        <!-- 🔹 댓글 섹션 -->
+        <section class="comments-section">
+            <h2 class="comments-section-title">Comments</h2>
+
+            <!-- 댓글 작성 폼 -->
+            <form id="commentForm" class="comment-form">
+                <div class="form-row">
+                    <textarea id="commentContent"
+                              class="textarea"
+                              placeholder="댓글을 입력하세요"></textarea>
+                </div>
+
+                <div class="comment-form__bottom">
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="commentIsAnonymous">
+                        <span>익명으로 댓글 작성</span>
+                    </label>
+
+                    <button type="button"
+                            class="btn btn--primary"
+                            id="btnCommentSubmit">
+                        댓글 등록
+                    </button>
+                </div>
+            </form>
+
+            <!-- 댓글 목록 -->
+            <div id="comment-list" class="comment-list">
+                <!-- JS에서 댓글 리스트 렌더링 -->
+            </div>
+        </section>
+    </div>
+</main>
+
+</body>
+</html>

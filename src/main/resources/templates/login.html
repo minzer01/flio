@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flio - Login</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="page auth-page">
+
+<main class="auth-container">
+    <section class="auth-card">
+
+        <!-- signup이랑 동일한 로고 구조 -->
+        <div class="auth-logo-wrapper">
+            <img src="/img/logo.png" alt="Flio logo" class="auth-logo">
+        </div>
+
+        <h1 class="auth-title">Welcome to Flio</h1>
+        <p class="auth-subtitle">Share your travel experiences</p>
+
+        <!-- 로그인 폼 -->
+        <form id="loginForm" class="auth-form">
+            <label class="auth-label">
+                Email
+                <input id="loginEmail" type="email" class="auth-input"
+                       placeholder="Enter your email" required>
+            </label>
+
+            <label class="auth-label">
+                Password
+                <input id="loginPassword" type="password" class="auth-input"
+                       placeholder="Enter your password" required>
+            </label>
+
+            <button type="submit" class="btn-primary auth-submit-btn">
+                Login
+            </button>
+        </form>
+
+        <p class="auth-footer-text">
+            Don't have an account?
+            <a href="/signup" id="signupLink">Sign up</a>
+        </p>
+    </section>
+</main>
+
+<script src="/js/login.js"></script>
+
+
+</body>
+</html>
