@@ -41,7 +41,7 @@ public class CommentService {
 
     public List<Comment> findAllByPostId(Long postId) {
         postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("post not found"));
-        return commentRepository.findAllByPostIdOrderByIdAsc(postId);
+        return commentRepository.findAllByPostIdWithWriter(postId);
     }
 
     @Transactional

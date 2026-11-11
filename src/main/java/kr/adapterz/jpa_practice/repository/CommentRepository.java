@@ -2,6 +2,7 @@ package kr.adapterz.jpa_practice.repository;
 
 import kr.adapterz.jpa_practice.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,5 +10,6 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long>{
 
-    List<Comment> findAllByPostIdOrderByIdAsc(Long postId);
+    @Query("SELECT c FROM Comment c JOIN FETCH c.writer WHERE c.post.id = :postId ORDER BY c.id ASC")
+    List<Comment> findAllByPostIdWithWriter(Long postId);
 }

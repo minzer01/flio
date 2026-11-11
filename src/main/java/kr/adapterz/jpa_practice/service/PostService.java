@@ -42,7 +42,7 @@ public class PostService {
     }
 
     public List<Post> findAll() {
-        return postRepository.findAllByOrderByIdDesc();
+        return postRepository.findAllWithWriter();
     }
 
     @Transactional
