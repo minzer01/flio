@@ -17,13 +17,9 @@
     </div>
 
     <div class="top-nav__right">
-        <!-- 프로필 드롭다운 버튼 -->
         <button class="profile-menu-btn" id="profileMenuButton" type="button">HI</button>
-
-        <!-- 드롭다운 메뉴 -->
         <div class="profile-menu" id="profileMenu">
             <div class="profile-menu__item" data-action="edit">회원정보수정</div>
-            <div class="profile-menu__item" data-action="password">비밀번호수정</div>
             <div class="profile-menu__item profile-menu__item--danger" data-action="logout">로그아웃</div>
         </div>
     </div>
@@ -36,7 +32,7 @@
         <form class="form" id="memberEditForm">
             <div class="form-row">
                 <label class="form-label" for="edit-email">이메일</label>
-                <input id="edit-email" type="email" class="input" value="samplecode@gmail.com" readonly>
+                <input id="edit-email" type="email" class="input" readonly>
                 <p class="form-helper">이메일은 변경할 수 없습니다.</p>
             </div>
 
@@ -47,13 +43,38 @@
                 <p class="form-helper" id="edit-nickname-helper"></p>
             </div>
 
-            <button type="button" class="btn btn--primary btn--block" id="btnEdit" disabled>
-                수정하기
+            <button type="button" class="btn btn--primary btn--block" id="btnEditNickname" disabled>
+                닉네임 수정
             </button>
         </form>
+    </section>
 
+    <section class="page-section card card--narrow">
+        <h2 class="section-title">비밀번호 변경</h2>
+
+        <form class="form" id="passwordEditForm">
+            <div class="form-row">
+                <label class="form-label" for="pw-new">새 비밀번호</label>
+                <input id="pw-new" type="password" class="input"
+                       placeholder="새 비밀번호를 입력해 주세요.">
+                <p class="form-helper" id="pw-new-helper"></p>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label" for="pw-confirm">비밀번호 확인</label>
+                <input id="pw-confirm" type="password" class="input"
+                       placeholder="새 비밀번호를 한 번 더 입력해 주세요.">
+                <p class="form-helper" id="pw-confirm-helper"></p>
+            </div>
+
+            <button type="button" class="btn btn--primary btn--block" id="btnEditPassword" disabled>
+                비밀번호 변경
+            </button>
+        </form>
+    </section>
+
+    <section class="page-section card card--narrow">
         <div class="member-actions-row">
-            <a href="/members/password" class="link-text">비밀번호 변경</a>
             <a href="#" class="link-text link-text--danger" id="btnWithdrawOpen">회원 탈퇴</a>
         </div>
     </section>

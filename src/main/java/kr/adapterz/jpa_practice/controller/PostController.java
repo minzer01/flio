@@ -4,9 +4,11 @@ import kr.adapterz.jpa_practice.dto.post.CreatePostRequest;
 import kr.adapterz.jpa_practice.dto.post.PostResponse;
 import kr.adapterz.jpa_practice.dto.post.UpdatePostRequest;
 import kr.adapterz.jpa_practice.entity.post.Post;
+import kr.adapterz.jpa_practice.security.CustomUserDetails;
 import kr.adapterz.jpa_practice.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -36,8 +38,11 @@ public class PostController {
 
     //게시글 작성
     @PostMapping
-    public ResponseEntity<PostResponse> create(@RequestBody CreatePostRequest request) {
-        Post post = postService.create(request);
+    public ResponseEntity<PostResponse> create(
+            @RequestBody CreatePostRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long writerId = userDetails.getUser().getId();
+        Post post = postService.create(request, writerId);
 
         Long createdPostId = post.getId();
         URI location = URI.create("/api/v1/posts/" + createdPostId);
@@ -56,19 +61,32 @@ public class PostController {
     }
     //게시글 수정
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponse> update(@PathVariable Long postId, @RequestBody UpdatePostRequest request) {
+    public ResponseEntity<PostResponse> update(
+            @PathVariable Long postId,
+            @RequestBody UpdatePostRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
-            Post post = postService.update(postId, request);
+            Long currentUserId = userDetails.getUser().getId();
+            Post post = postService.update(postId, request, currentUserId);
             return ResponseEntity.ok(PostResponse.of(post));   // 200 OK
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();  // 404
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).build();  // 403 Forbidden
         }
     }
 
     //게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> delete(@PathVariable Long postId) {
-        postService.delete(postId);
-        return ResponseEntity.noContent().build();  // 204 No Content
+    public ResponseEntity<Void> delete(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            Long currentUserId = userDetails.getUser().getId();
+            postService.delete(postId, currentUserId);
+            return ResponseEntity.noContent().build();  // 204 No Content
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).build();  // 403 Forbidden
+        }
     }
 }

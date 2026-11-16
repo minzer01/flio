@@ -1,5 +1,6 @@
 package kr.adapterz.jpa_practice.repository;
 
+
 import kr.adapterz.jpa_practice.entity.post.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

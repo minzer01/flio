@@ -23,9 +23,11 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Comment create (CreateCommentRequest request) {
-        User writer = userRepository.findById(request.getWriterId()).orElseThrow(() ->new IllegalArgumentException("user not found"));
-        Post post = postRepository.findById(request.getPostId()).orElseThrow(() ->new IllegalArgumentException("post not found"));
+    public Comment create(CreateCommentRequest request, Long writerId) {
+        User writer = userRepository.findById(writerId)
+                .orElseThrow(() -> new IllegalArgumentException("user not found"));
+        Post post = postRepository.findById(request.getPostId())
+                .orElseThrow(() -> new IllegalArgumentException("post not found"));
         Comment comment = new Comment(
                 request.getContent(),
                 request.getIsAnonymous(),
@@ -45,8 +47,12 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment update(Long id, UpdateCommentRequest request) {
+    public Comment update(Long id, UpdateCommentRequest request, Long currentUserId) {
         Comment comment = findById(id);
+
+        if (!comment.getWriter().getId().equals(currentUserId)) {
+            throw new SecurityException("본인의 댓글만 수정할 수 있습니다.");
+        }
 
         if (request.getContent() != null) comment.setContent(request.getContent());
         if (request.getIsAnonymous() != null) comment.setIsAnonymous(request.getIsAnonymous());
@@ -55,7 +61,13 @@ public class CommentService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        commentRepository.delete(findById(id));
+    public void delete(Long id, Long currentUserId) {
+        Comment comment = findById(id);
+
+        if (!comment.getWriter().getId().equals(currentUserId)) {
+            throw new SecurityException("본인의 댓글만 삭제할 수 있습니다.");
+        }
+
+        commentRepository.delete(comment);
     }
 }

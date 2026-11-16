@@ -4,6 +4,28 @@ const POST_API_URL = '/api/v1/posts';
 
 let currentPostId = null;
 
+// 현재 로그인한 사용자 ID
+function getCurrentUserId() {
+    const id = localStorage.getItem('currentUserId');
+    return id ? Number(id) : null;
+}
+
+// 인증 헤더 가져오기
+function getAuthHeaders() {
+    const token = localStorage.getItem('accessToken');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
+// 401/403 처리
+function handleAuthError(response) {
+    if (response.status === 401 || response.status === 403) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return true;
+    }
+    return false;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     currentPostId = extractPostIdFromPath();
 
@@ -71,13 +93,24 @@ function getSelectedThemes() {
 // 1) 기존 게시글 정보 불러와서 폼에 세팅
 async function loadPostForEdit(postId) {
     try {
-        const res = await fetch(`${POST_API_URL}/${postId}`);
+        const res = await fetch(`${POST_API_URL}/${postId}`, {
+            headers: getAuthHeaders()
+        });
+        if (handleAuthError(res)) return;
         if (!res.ok) {
             alert(`게시글 정보를 불러오지 못했습니다. (status: ${res.status})`);
             return;
         }
 
         const post = await res.json();
+
+        // 본인 글이 아니면 접근 차단
+        const currentUserId = getCurrentUserId();
+        if (!currentUserId || post.writerId !== currentUserId) {
+            alert('본인의 게시글만 수정할 수 있습니다.');
+            window.location.href = `/posts/${postId}`;
+            return;
+        }
 
         // 기본 필드
         document.getElementById('title').value = post.title || '';
@@ -149,15 +182,28 @@ async function handleEditPost() {
 
     console.log('update body:', updateData);
 
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+    }
+
     try {
         const res = await fetch(`${POST_API_URL}/${currentPostId}`, {
             method: 'PATCH',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(updateData)
         });
 
+        if (handleAuthError(res)) return;
+        if (res.status === 403) {
+            alert('본인의 게시글만 수정할 수 있습니다.');
+            return;
+        }
         if (!res.ok) {
             alert(`게시글 수정 실패 (status: ${res.status})`);
             return;

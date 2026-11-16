@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class CreateCommentRequest {
-    private Long writerId;
     private Long postId;
     private String content;
     private Boolean isAnonymous = false;

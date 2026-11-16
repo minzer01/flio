@@ -20,8 +20,9 @@ public class PostService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Post create (CreatePostRequest request) {
-        User writer = userRepository.findById(request.getWriterId()).orElseThrow(() -> new IllegalArgumentException("user not found"));
+    public Post create(CreatePostRequest request, Long writerId) {
+        User writer = userRepository.findById(writerId)
+                .orElseThrow(() -> new IllegalArgumentException("user not found"));
         Post post = new Post(
                 request.getTitle(),
                 request.getContent(),
@@ -46,8 +47,12 @@ public class PostService {
     }
 
     @Transactional
-    public Post update(Long id, UpdatePostRequest request) {
+    public Post update(Long id, UpdatePostRequest request, Long currentUserId) {
         Post post = findById(id);
+
+        if (!post.getWriter().getId().equals(currentUserId)) {
+            throw new SecurityException("본인의 게시글만 수정할 수 있습니다.");
+        }
 
         if (request.getTitle() != null) post.setTitle(request.getTitle());
         if (request.getContent() != null) post.setContent(request.getContent());
@@ -61,7 +66,13 @@ public class PostService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        postRepository.delete(findById(id));
+    public void delete(Long id, Long currentUserId) {
+        Post post = findById(id);
+
+        if (!post.getWriter().getId().equals(currentUserId)) {
+            throw new SecurityException("본인의 게시글만 삭제할 수 있습니다.");
+        }
+
+        postRepository.delete(post);
     }
 }

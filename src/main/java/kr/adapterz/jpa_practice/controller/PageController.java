@@ -45,7 +45,7 @@ public class PageController {
 
     @GetMapping("/members/password")
     public String passwordEditPage() {
-        return "password-edit";
+        return "redirect:/members/edit";
     }
 
 }

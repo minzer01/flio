@@ -25,15 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
         menu.classList.remove("is-open");
 
         if (action === "edit") {
-            // 회원정보수정 페이지
             window.location.href = "/members/edit";
         }
-        if (action === "password") {
-            // 비밀번호수정 페이지
-            window.location.href = "/members/password";
-        }
         if (action === "logout") {
-            // 로그인 백엔드 붙이기 전까지는 임시 로그아웃 처리
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('currentUserId');
             alert("로그아웃 되었습니다.");
             window.location.href = "/login";
         }

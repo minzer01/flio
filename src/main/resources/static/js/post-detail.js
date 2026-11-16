@@ -2,9 +2,27 @@
 
 const POST_API_URL = '/api/v1/posts';
 
-// 로그인한 유저 ID (없으면 1번으로 fallback)
-const LOGGED_IN_USER_ID =
-    Number(localStorage.getItem('currentUserId')) || 1;
+// 현재 로그인한 사용자 ID
+function getCurrentUserId() {
+    const id = localStorage.getItem('currentUserId');
+    return id ? Number(id) : null;
+}
+
+// 인증 헤더 가져오기
+function getAuthHeaders() {
+    const token = localStorage.getItem('accessToken');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
+// 401/403 처리
+function handleAuthError(response) {
+    if (response.status === 401 || response.status === 403) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return true;
+    }
+    return false;
+}
 
 
 let currentPostId = null;
@@ -96,7 +114,10 @@ async function fetchPostDetail(postId) {
     const container = document.getElementById('post-detail-container');
 
     try {
-        const res = await fetch(`${POST_API_URL}/${postId}`);
+        const res = await fetch(`${POST_API_URL}/${postId}`, {
+            headers: getAuthHeaders()
+        });
+        if (handleAuthError(res)) return;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const post = await res.json();
@@ -112,6 +133,9 @@ async function fetchPostDetail(postId) {
 function renderPostDetail(post) {
     const container = document.getElementById('post-detail-container');
     if (!container) return;
+
+    const currentUserId = getCurrentUserId();
+    const isOwner = currentUserId && post.writerId === currentUserId;
 
     const displayDate = post.createdAt
         ? timeAgo(post.createdAt)
@@ -134,6 +158,14 @@ function renderPostDetail(post) {
         </div>`
         : '';
 
+    // 본인 글일 때만 수정/삭제 버튼 표시
+    const actionButtons = isOwner
+        ? `<div class="post-detail__actions">
+               <button class="btn btn--secondary post-detail__action-btn" id="btnPostEdit">수정</button>
+               <button class="btn btn--danger post-detail__action-btn" id="btnPostDelete">삭제</button>
+           </div>`
+        : '';
+
     container.innerHTML = `
         <article class="post-detail">
             ${imageSection}
@@ -141,10 +173,7 @@ function renderPostDetail(post) {
             <header class="post-detail__header">
                 <div class="post-detail__title-row">
                     <h1 class="post-detail__title">${post.title || '(제목 없음)'}</h1>
-                    <div class="post-detail__actions">
-                        <button class="btn btn--secondary post-detail__action-btn" id="btnPostEdit">수정</button>
-                        <button class="btn btn--danger post-detail__action-btn" id="btnPostDelete">삭제</button>
-                    </div>
+                    ${actionButtons}
                 </div>
 
                 <div class="post-detail__tags">
@@ -187,9 +216,11 @@ async function onClickDeletePost() {
 
     try {
         const res = await fetch(`${POST_API_URL}/${currentPostId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: getAuthHeaders()
         });
 
+        if (handleAuthError(res)) return;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         window.location.href = '/posts';
@@ -207,7 +238,10 @@ async function fetchComments(postId) {
     if (!listEl) return;
 
     try {
-        const res = await fetch(`/api/v1/posts/${postId}/comments`);
+        const res = await fetch(`/api/v1/posts/${postId}/comments`, {
+            headers: getAuthHeaders()
+        });
+        if (handleAuthError(res)) return;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const comments = await res.json(); // CommentResponse[]
@@ -228,11 +262,24 @@ function renderComments(comments) {
     }
 
     listEl.innerHTML = '';
+    const currentUserId = getCurrentUserId();
 
     comments.forEach(comment => {
         const initials = getInitials(comment.writerNickname || '익명');
-
         const timeText = comment.createdAt ? timeAgo(comment.createdAt) : '';
+        const isOwner = currentUserId && comment.writerId === currentUserId;
+
+        // 본인 댓글일 때만 수정/삭제 버튼 표시
+        const actionButtons = isOwner
+            ? `<div class="comment-actions">
+                   <button type="button" class="icon-button comment-edit-btn">
+                       <span class="material-icons-outlined">edit</span>
+                   </button>
+                   <button type="button" class="icon-button icon-button--danger comment-delete-btn">
+                       <span class="material-icons-outlined">delete</span>
+                   </button>
+               </div>`
+            : '';
 
         const itemHtml = `
             <div class="comment-item" data-id="${comment.id}">
@@ -244,14 +291,7 @@ function renderComments(comments) {
                             <span class="comment-author">${comment.writerNickname}</span>
                             <span class="comment-time">${timeText}</span>
                         </div>
-                        <div class="comment-actions">
-                            <button type="button" class="icon-button comment-edit-btn">
-                                <span class="material-icons-outlined">edit</span>
-                            </button>
-                            <button type="button" class="icon-button icon-button--danger comment-delete-btn">
-                                <span class="material-icons-outlined">delete</span>
-                            </button>
-                        </div>
+                        ${actionButtons}
                     </div>
 
                     <div class="comment-content-view">
@@ -279,6 +319,13 @@ function renderComments(comments) {
 async function handleCreateComment() {
     if (!currentPostId) return;
 
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+    }
+
     const contentEl = document.getElementById('commentContent');
     const anonymousEl = document.getElementById('commentIsAnonymous');
 
@@ -289,7 +336,6 @@ async function handleCreateComment() {
     }
 
     const body = {
-        writerId: LOGGED_IN_USER_ID,
         postId: currentPostId,
         content,
         isAnonymous: !!anonymousEl.checked
@@ -299,11 +345,13 @@ async function handleCreateComment() {
         const res = await fetch(`/api/v1/posts/${currentPostId}/comments`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(body)
         });
 
+        if (handleAuthError(res)) return;
         if (!res.ok) {
             alert(`댓글 등록 실패 (status: ${res.status})`);
             return;
@@ -387,11 +435,17 @@ async function onClickSaveComment(commentId, itemEl) {
         const res = await fetch(`/api/v1/posts/${currentPostId}/comments/${commentId}`, {
             method: 'PATCH',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
             },
             body: JSON.stringify(body)
         });
 
+        if (handleAuthError(res)) return;
+        if (res.status === 403) {
+            alert('본인의 댓글만 수정할 수 있습니다.');
+            return;
+        }
         if (!res.ok) {
             alert(`댓글 수정 실패 (status: ${res.status})`);
             return;
@@ -411,9 +465,15 @@ async function onClickDeleteComment(commentId) {
 
     try {
         const res = await fetch(`/api/v1/posts/${currentPostId}/comments/${commentId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: getAuthHeaders()
         });
 
+        if (handleAuthError(res)) return;
+        if (res.status === 403) {
+            alert('본인의 댓글만 삭제할 수 있습니다.');
+            return;
+        }
         if (!res.ok) {
             alert(`댓글 삭제 실패 (status: ${res.status})`);
             return;

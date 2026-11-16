@@ -4,6 +4,7 @@ import kr.adapterz.jpa_practice.entity.user.User;
 import kr.adapterz.jpa_practice.entity.user.UserRole;
 import kr.adapterz.jpa_practice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Transactional
@@ -44,4 +46,10 @@ public class UserService {
         user.withdraw();
     }
 
+    @Transactional
+    public void changePassword(Long id, String newPassword) {
+        User user = findById(id);
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+    }
 }

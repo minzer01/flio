@@ -1,8 +1,6 @@
 // src/main/resources/static/js/post-new.js
 
 const POST_API_URL = '/api/v1/posts';
-// 로그인 붙기 전까지 임시 writerId
-const TEMP_WRITER_ID = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
     const moodGroup = document.getElementById('moodGroup');
@@ -67,8 +65,14 @@ async function handleCreatePost() {
         return;
     }
 
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+    }
+
     const body = {
-        writerId: TEMP_WRITER_ID,
         title,
         content,
         country: countryEl.value.trim() || null,
@@ -84,10 +88,17 @@ async function handleCreatePost() {
         const response = await fetch(POST_API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(body)
         });
+
+        if (response.status === 401 || response.status === 403) {
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login';
+            return;
+        }
 
         if (!response.ok) {
             alert(`게시글 생성 실패 (status: ${response.status})`);

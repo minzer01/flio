@@ -56,10 +56,11 @@ public class AuthService {
 
         //인증된 사용자 정보 객체
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
+        User user = principal.getUser();
         //토큰 생성
-        String accessToken = tokenProvider.createAccessToken(principal.getUser());
-        String refreshToken = tokenProvider.createRefreshToken(principal.getUser());
+        String accessToken = tokenProvider.createAccessToken(user);
+        String refreshToken = tokenProvider.createRefreshToken(user);
 
-        return new LoginResponse(accessToken, refreshToken);
+        return new LoginResponse(user.getId(), accessToken, refreshToken);
     }
 }

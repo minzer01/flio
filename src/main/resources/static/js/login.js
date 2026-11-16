@@ -38,11 +38,12 @@ async function onLoginSubmit(e) {
             return;
         }
 
-        const user = await res.json();
-        console.log('로그인 성공:', user);
+        const data = await res.json();
+        console.log('로그인 성공:', data);
 
-        localStorage.setItem("accessToken", user.accessToken);
-        localStorage.setItem("refreshToken", user.refreshToken);
+        localStorage.setItem("currentUserId", data.userId);
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
 
         // 로그인 성공 후 목록 페이지로 이동
         window.location.href = '/posts';

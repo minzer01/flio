@@ -1,12 +1,14 @@
 package kr.adapterz.jpa_practice.controller;
 
-import kr.adapterz.jpa_practice.dto.user.CreateUserRequest;
+import kr.adapterz.jpa_practice.dto.user.ChangePasswordRequest;
 import kr.adapterz.jpa_practice.dto.user.UpdateUserRequest;
 import kr.adapterz.jpa_practice.dto.user.UserResponse;
 import kr.adapterz.jpa_practice.entity.user.User;
+import kr.adapterz.jpa_practice.security.CustomUserDetails;
 import kr.adapterz.jpa_practice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -18,6 +20,32 @@ public class UserController {
 
     private final UserService userService;
 
+    // 현재 로그인한 사용자 정보 조회
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getMe(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok(UserResponse.of(user));
+    }
+
+    // 현재 로그인한 사용자 정보 수정
+    @PatchMapping("/me")
+    public ResponseEntity<UserResponse> updateMe(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UpdateUserRequest request) {
+        Long userId = userDetails.getUser().getId();
+        User updatedUser = userService.update(userId, request.getNickname());
+        return ResponseEntity.ok(UserResponse.of(updatedUser));
+    }
+
+    // 현재 로그인한 사용자 비밀번호 변경
+    @PatchMapping("/me/password")
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody ChangePasswordRequest request) {
+        Long userId = userDetails.getUser().getId();
+        userService.changePassword(userId, request.getNewPassword());
+        return ResponseEntity.ok().build();
+    }
 
     // 회원 조회
     @GetMapping("/{id}")
