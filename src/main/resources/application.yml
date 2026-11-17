@@ -1,4 +1,9 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/community?serverTimezone=UTC&useSSL=false}
     username: ${DB_USERNAME:root}
@@ -18,3 +23,12 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    region: ${AWS_REGION:ap-northeast-2}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}

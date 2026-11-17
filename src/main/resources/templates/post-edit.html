@@ -62,11 +62,15 @@
                     </div>
                 </div>
 
-                <!-- 이미지 URL (지금은 1개만) -->
+                <!-- 이미지 업로드 -->
                 <div class="form-row">
-                    <label for="imageUrl" class="form-label">Image URL</label>
-                    <input id="imageUrl" name="imageUrl" class="input" placeholder="Paste image URL">
-                    <p class="form-helper">Image Url을 첨부하세요.</p>
+                    <label for="imageFile" class="form-label">이미지</label>
+                    <input type="file" id="imageFile" name="imageFile" class="input" accept="image/*">
+                    <p class="form-helper" id="image-helper">새 이미지를 선택하면 기존 이미지가 교체됩니다. (최대 10MB)</p>
+                    <input type="hidden" id="imageUrl" name="imageUrl">
+                    <div id="image-preview" class="image-preview" style="display:none;">
+                        <img id="preview-img" src="" alt="preview" style="max-width:200px; max-height:200px; margin-top:8px;">
+                    </div>
                 </div>
 
                 <!-- 익명 여부 -->

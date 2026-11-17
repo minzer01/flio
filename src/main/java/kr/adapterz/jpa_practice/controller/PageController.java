@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class PageController {
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/posts";
+    }
+
     @GetMapping("/posts") //http://localhost:8080/posts
     public String postsPage() { // templates/posts.html
         return "posts";

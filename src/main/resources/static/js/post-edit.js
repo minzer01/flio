@@ -1,6 +1,7 @@
 // src/main/resources/static/js/post-edit.js
 
 const POST_API_URL = '/api/v1/posts';
+const IMAGE_UPLOAD_URL = '/api/v1/images/upload';
 
 let currentPostId = null;
 
@@ -40,15 +41,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupMoodSelection(moodGroup);
     setupThemeSelection(themeGroup);
+    setupImageUpload();
 
     // 기존 데이터 불러오기
     loadPostForEdit(currentPostId);
 });
 
+// 이미지 업로드 설정
+function setupImageUpload() {
+    const fileInput = document.getElementById('imageFile');
+    const previewContainer = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+
+    fileInput?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                previewImg.src = event.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// 이미지 S3 업로드
+async function uploadImage(file) {
+    const token = localStorage.getItem('accessToken');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(IMAGE_UPLOAD_URL, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '이미지 업로드 실패');
+    }
+
+    const result = await response.json();
+    return result.imageUrl;
+}
+
 // URL: /posts/{id}/edit 에서 {id} 뽑아내기
 function extractPostIdFromPath() {
     const segments = window.location.pathname.split('/').filter(Boolean);
-    // 예: "/posts/9/edit" -> ["posts","9","edit"]
     if (segments.length < 3) return null;
     const idStr = segments[1];
     const num = Number(idStr);
@@ -90,7 +133,7 @@ function getSelectedThemes() {
     return actives.map(chip => chip.dataset.value);
 }
 
-// 1) 기존 게시글 정보 불러와서 폼에 세팅
+// 기존 게시글 정보 불러와서 폼에 세팅
 async function loadPostForEdit(postId) {
     try {
         const res = await fetch(`${POST_API_URL}/${postId}`, {
@@ -118,6 +161,14 @@ async function loadPostForEdit(postId) {
         document.getElementById('country').value = post.country || '';
         document.getElementById('imageUrl').value = post.imageUrl || '';
         document.getElementById('isAnonymous').checked = !!post.isAnonymous;
+
+        // 기존 이미지가 있으면 미리보기 표시
+        if (post.imageUrl) {
+            const previewContainer = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+            previewImg.src = post.imageUrl;
+            previewContainer.style.display = 'block';
+        }
 
         // mood
         if (post.mood) {
@@ -151,7 +202,7 @@ async function loadPostForEdit(postId) {
     }
 }
 
-// 2) "Save Changes" 버튼 클릭 시 호출
+// "Save Changes" 버튼 클릭 시 호출
 async function handleEditPost() {
     if (!currentPostId) {
         alert('잘못된 게시글 ID입니다.');
@@ -166,9 +217,35 @@ async function handleEditPost() {
         return;
     }
 
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+    }
+
     const country = document.getElementById('country').value.trim() || null;
-    const imageUrl = document.getElementById('imageUrl').value.trim() || null;
     const isAnonymous = document.getElementById('isAnonymous').checked;
+    const imageHelper = document.getElementById('image-helper');
+
+    // 기존 이미지 URL (새 파일 선택 안 하면 이걸 유지)
+    let imageUrl = document.getElementById('imageUrl').value.trim() || null;
+
+    // 새 이미지 파일이 선택되었으면 업로드
+    const fileInput = document.getElementById('imageFile');
+    const file = fileInput?.files[0];
+    if (file) {
+        try {
+            imageHelper.textContent = '이미지 업로드 중...';
+            imageUrl = await uploadImage(file);
+            imageHelper.textContent = '이미지 업로드 완료!';
+        } catch (err) {
+            console.error('Image upload error:', err);
+            alert('이미지 업로드에 실패했습니다: ' + err.message);
+            imageHelper.textContent = '이미지 업로드 실패';
+            return;
+        }
+    }
 
     const updateData = {
         title,
@@ -181,13 +258,6 @@ async function handleEditPost() {
     };
 
     console.log('update body:', updateData);
-
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-        alert('로그인이 필요합니다.');
-        window.location.href = '/login';
-        return;
-    }
 
     try {
         const res = await fetch(`${POST_API_URL}/${currentPostId}`, {
@@ -209,7 +279,6 @@ async function handleEditPost() {
             return;
         }
 
-        // 성공 시 상세 페이지로 이동
         window.location.href = `/posts/${currentPostId}`;
     } catch (err) {
         console.error('handleEditPost error:', err);
