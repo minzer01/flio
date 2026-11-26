@@ -3,7 +3,7 @@
 # N+1 문제 비교 테스트 스크립트
 # 사용법: ./test-n-plus-one.sh
 
-cd /Users/ahnmin-yeong/Downloads/flio
+cd "$(dirname "$0")"
 
 echo "============================================"
 echo "N+1 문제 해결 전/후 쿼리 비교 테스트"
@@ -30,7 +30,7 @@ test_queries() {
 
     # 서버 시작
     echo "서버 시작 중..."
-    DB_PASSWORD=1234 JWT_SECRET=$(openssl rand -base64 32) ./gradlew bootRun 2>&1 | tee /tmp/server_$VERSION.log &
+    DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD 환경변수를 설정하세요} JWT_SECRET=$(openssl rand -base64 32) ./gradlew bootRun 2>&1 | tee /tmp/server_$VERSION.log &
     SERVER_PID=$!
 
     # 서버 준비 대기
